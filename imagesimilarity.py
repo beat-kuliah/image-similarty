@@ -1,5 +1,9 @@
 import cv2
+import numpy as np
+from skimage.metrics import structural_similarity as ssim
 from PIL import Image
+
+output_image_path = "similarimage.jpg" 
 
 def has_transparency(img):
     # Check if the image has an alpha channel
@@ -35,30 +39,22 @@ def crop_image(input_path, output_path, left, top, right, bottom):
 
 # treshold tuh kaya persentase, jadi imagenya dianggap similar kalau persentase kesamaannya diatas 70% (treshold 0.7 = 70%)
 def image_similarity(image_real_path, image_similar_path):
-    output_image_path = "similarimage.jpg"   
+    crop_image(image_similar_path, output_image_path, 51, 25, 399, 225)
     change_background_to_white(image_similar_path, output_image_path)
-    crop_image(image_similar_path, output_image_path, 128, 65, 322, 185)
 
     # Load images
     real_image = cv2.imread(image_real_path)
     similar_image_source = cv2.imread(image_similar_path)
-    similar_image = cv2.resize(similar_image_source, (174, 100)) 
+    
+     # Resize the image
+    resized_real = cv2.resize(real_image, (174, 100))
+    resized_similar = cv2.resize(similar_image_source, (174, 100))
     
     # Convert the training image to Grayscale
-    real_gray = cv2.cvtColor(real_image, cv2.COLOR_BGR2GRAY)
-    similar_gray = cv2.cvtColor(similar_image, cv2.COLOR_BGR2GRAY)
+    real_gray = cv2.cvtColor(resized_real, cv2.COLOR_BGR2GRAY)
+    similar_gray = cv2.cvtColor(resized_similar, cv2.COLOR_BGR2GRAY)
     
-    # Convert the training image to Binary
-    ret, real_gray = cv2.threshold(real_gray, 120, 255, cv2.THRESH_BINARY)
-    ret, similar_gray = cv2.threshold(similar_gray, 120, 255, cv2.THRESH_BINARY)
+    # Calculate Structural Similarity Index
+    similarity = ssim(real_gray, similar_gray)
     
-    counter = 0
-    for i in range(len(real_image)):
-        for j in range(len(real_image[0])):
-            # 0 black 255 white
-            if real_gray[i][j] == similar_gray[i][j]:
-                counter += 1
-
-    similarity = counter / 17400
-   
     return similarity
