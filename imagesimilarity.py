@@ -47,8 +47,8 @@ def image_similarity(image_real_path, image_similar_path):
     similar_image_source = cv2.imread(image_similar_path)
     
      # Resize the image
-    resized_real = cv2.resize(real_image, (174, 100))
-    resized_similar = cv2.resize(similar_image_source, (174, 100))
+    resized_real = cv2.resize(real_image, (348, 200))
+    resized_similar = cv2.resize(similar_image_source, (348, 200))
     
     # Convert the training image to Grayscale
     real_gray = cv2.cvtColor(resized_real, cv2.COLOR_BGR2GRAY)
